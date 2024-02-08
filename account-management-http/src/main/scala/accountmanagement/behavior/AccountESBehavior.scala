@@ -14,8 +14,6 @@ object AccountESBehavior {
 
   object AccountESMessage {
     case class ApplyTransaction(tx: Transaction, replier: Replier[Try[BigDecimal]]) extends AccountESMessage
-//    case class Join(userId: String, replier: Replier[Try[Set[String]]])             extends AccountESMessage
-//    case class Leave(userId: String)                                                extends AccountESMessage
   }
 
   object AccountES extends EntityType[AccountESMessage]("accountES")
@@ -41,10 +39,6 @@ object AccountESBehavior {
               .flatMap { balance =>
                 replier.reply(balance)
               }
-//          case AccountESMessage.Leave(userId) =>
-//            actor
-//              .?(AccountEventSourced.Leave(userId))
-//              .unit
         }
       }
 }

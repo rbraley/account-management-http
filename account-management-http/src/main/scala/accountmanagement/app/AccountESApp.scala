@@ -9,7 +9,7 @@ import accountmanagement.behavior.AccountESBehavior.{ AccountES, behavior }
 import infra.Layers
 import infra.Layers.ActorSystemZ
 import sttp.client3.UriContext
-import zio.{ Random, Scope, System, Task, ZIO, ZIOAppDefault, ZLayer }
+import zio.{ Scope, System, Task, ZIO, ZIOAppDefault, ZLayer }
 
 object AccountESApp extends ZIOAppDefault {
   private val defaultConfig = Config.default.copy(
