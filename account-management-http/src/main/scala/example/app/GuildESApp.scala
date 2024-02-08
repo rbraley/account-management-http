@@ -18,11 +18,15 @@ object GuildESApp extends ZIOAppDefault {
         .env("port")
         .map(
           _.flatMap(_.toIntOption).fold(
-            Config.default.copy(shardManagerUri = uri"http://shard-manager:8080/api/graphql")
+            Config.default.copy(
+              shardManagerUri = uri"http://shard-manager:8080/api/graphql",
+              selfHost = "account-management-http"
+            )
           )(port =>
             Config.default.copy(
               shardingPort = port,
-              shardManagerUri = uri"http://shard-manager:8080/api/graphql"
+              shardManagerUri = uri"http://shard-manager:8080/api/graphql",
+              selfHost = "account-management-http"
             )
           )
         )
