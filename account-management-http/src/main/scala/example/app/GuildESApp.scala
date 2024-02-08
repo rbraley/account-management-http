@@ -12,23 +12,16 @@ import zio.actors.ActorSystem
 import zio.{ Random, Scope, System, Task, ZIO, ZIOAppDefault, ZLayer }
 
 object GuildESApp extends ZIOAppDefault {
+  private val defaultConfig = Config.default.copy(
+    shardManagerUri = uri"http://shard-manager:8080/api/graphql",
+    selfHost = "account-management-http"
+  )
   val config: ZLayer[Any, SecurityException, Config] =
     ZLayer(
       System
         .env("port")
         .map(
-          _.flatMap(_.toIntOption).fold(
-            Config.default.copy(
-              shardManagerUri = uri"http://shard-manager:8080/api/graphql",
-              selfHost = "account-management-http"
-            )
-          )(port =>
-            Config.default.copy(
-              shardingPort = port,
-              shardManagerUri = uri"http://shard-manager:8080/api/graphql",
-              selfHost = "account-management-http"
-            )
-          )
+          _.flatMap(_.toIntOption).fold(defaultConfig)(port => defaultConfig.copy(shardingPort = port))
         )
     )
 
