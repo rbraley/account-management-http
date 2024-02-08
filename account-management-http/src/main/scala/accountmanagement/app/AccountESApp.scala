@@ -1,17 +1,16 @@
-package example.app
+package accountmanagement.app
 
 import com.devsisters.shardcake._
 import com.devsisters.shardcake.interfaces.Serialization
 import dev.profunktor.redis4cats.RedisCommands
-import example.behavior.GuildESBehavior.GuildESMessage.Join
-import example.behavior.GuildESBehavior.{ GuildES, behavior }
+import accountmanagement.behavior.AccountESBehavior.AccountESMessage.Join
+import accountmanagement.behavior.AccountESBehavior.{ AccountES, behavior }
 import infra.Layers
 import infra.Layers.ActorSystemZ
 import sttp.client3.UriContext
-import zio.actors.ActorSystem
 import zio.{ Random, Scope, System, Task, ZIO, ZIOAppDefault, ZLayer }
 
-object GuildESApp extends ZIOAppDefault {
+object AccountESApp extends ZIOAppDefault {
   private val defaultConfig = Config.default.copy(
     shardManagerUri = uri"http://shard-manager:8080/api/graphql",
     selfHost = "account-management-http"
@@ -31,16 +30,16 @@ object GuildESApp extends ZIOAppDefault {
     Unit
   ] =
     for {
-      _     <- Sharding.registerEntity(GuildES, behavior)
-      _     <- Sharding.registerScoped
-      guild <- Sharding.messenger(GuildES)
-      user1 <- Random.nextUUID.map(_.toString)
-      user2 <- Random.nextUUID.map(_.toString)
-      user3 <- Random.nextUUID.map(_.toString)
-      _     <- guild.send("guild1")(Join(user1, _)).debug
-      _     <- guild.send("guild1")(Join(user2, _)).debug
-      _     <- guild.send("guild1")(Join(user3, _)).debug
-      _     <- ZIO.never
+      _              <- Sharding.registerEntity(AccountES, behavior)
+      _              <- Sharding.registerScoped
+      accountManager <- Sharding.messenger(AccountES)
+      user1          <- Random.nextUUID.map(_.toString)
+      user2          <- Random.nextUUID.map(_.toString)
+      user3          <- Random.nextUUID.map(_.toString)
+      _              <- accountManager.send("account1")(Join(user1, _)).debug
+      _              <- accountManager.send("account1")(Join(user2, _)).debug
+      _              <- accountManager.send("account1")(Join(user3, _)).debug
+      _              <- ZIO.never
     } yield ()
 
   def run: Task[Unit] =
@@ -51,7 +50,7 @@ object GuildESApp extends ZIOAppDefault {
         ZLayer.succeed(GrpcConfig.default),
         ZLayer.succeed(RedisConfig.default),
         Layers.redis,
-        Layers.actorSystem("GuildSystem"),
+        Layers.actorSystem("AccountSystem"),
         StorageRedis.live,
         KryoSerialization.live,
         ShardManagerClient.liveWithSttp,

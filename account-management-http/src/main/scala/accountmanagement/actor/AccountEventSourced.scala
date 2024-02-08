@@ -1,43 +1,42 @@
-package example.actor
+package accountmanagement.actor
 
 import zio.actors.Context
 import zio.actors.persistence.{ Command, EventSourcedStateful, PersistenceId }
 import zio.{ UIO, ZIO }
 
 import scala.util.{ Failure, Success, Try }
-import zio.actors.ActorSystem
 import zio.actors.Supervisor
 import zio.actors.ActorRef
 import infra.Layers.ActorSystemZ
 
-object GuildEventSourced {
-  sealed trait GuildMessage[+_]
-  case class Join(userId: String)  extends GuildMessage[Try[Set[String]]]
-  case class Leave(userId: String) extends GuildMessage[Unit]
-  case object Get                  extends GuildMessage[GuildState]
+object AccountEventSourced {
+  sealed trait AccountMessage[+_]
+  case class Join(userId: String)  extends AccountMessage[Try[Set[String]]]
+  case class Leave(userId: String) extends AccountMessage[Unit]
+  case object Get                  extends AccountMessage[AccountState]
 
-  sealed trait GuildEvent
-  case class JoinedEvent(userId: String) extends GuildEvent
-  case class LeftEvent(userId: String)   extends GuildEvent
+  sealed trait AccountEvent
+  case class JoinedEvent(userId: String) extends AccountEvent
+  case class LeftEvent(userId: String)   extends AccountEvent
 
-  case class GuildState(members: Set[String])
-  object GuildState {
-    def empty: GuildState = GuildState(members = Set.empty)
+  case class AccountState(members: Set[String])
+  object AccountState {
+    def empty: AccountState = AccountState(members = Set.empty)
   }
 
-  def handler(persistenceId: String): EventSourcedStateful[Any, GuildState, GuildMessage, GuildEvent] =
-    new EventSourcedStateful[Any, GuildState, GuildMessage, GuildEvent](
+  def handler(persistenceId: String): EventSourcedStateful[Any, AccountState, AccountMessage, AccountEvent] =
+    new EventSourcedStateful[Any, AccountState, AccountMessage, AccountEvent](
       PersistenceId(persistenceId)
     ) {
       override def receive[A](
-          state: GuildState,
-          msg: GuildMessage[A],
+          state: AccountState,
+          msg: AccountMessage[A],
           context: Context
-      ): UIO[(Command[GuildEvent], GuildState => A)] =
+      ): UIO[(Command[AccountEvent], AccountState => A)] =
         msg match {
           case Join(userId) =>
             if (state.members.size >= 5) {
-              ZIO.succeed((Command.ignore, _ => Failure(new Exception("Guild is already full!")).asInstanceOf[A]))
+              ZIO.succeed((Command.ignore, _ => Failure(new Exception("Account is already full!")).asInstanceOf[A]))
             } else {
               ZIO.succeed((Command.persist(JoinedEvent(userId)), st => Success(st.members).asInstanceOf[A]))
             }
@@ -45,7 +44,7 @@ object GuildEventSourced {
           case Get           => ZIO.succeed((Command.ignore, _ => state.asInstanceOf[A]))
         }
 
-      override def sourceEvent(state: GuildState, event: GuildEvent): GuildState =
+      override def sourceEvent(state: AccountState, event: AccountEvent): AccountState =
         event match {
           case JoinedEvent(userId) =>
             state.copy(
@@ -60,17 +59,17 @@ object GuildEventSourced {
 
   def actorRef(
       entityId: String
-  ): ZIO[ActorSystemZ, Throwable, ActorRef[GuildEventSourced.GuildMessage]] =
+  ): ZIO[ActorSystemZ, Throwable, ActorRef[AccountEventSourced.AccountMessage]] =
     ZIO.serviceWithZIO[ActorSystemZ] { actorSystemZ =>
       actorSystemZ.system
-        .select[GuildEventSourced.GuildMessage](actorSystemZ.basePath + entityId)
+        .select[AccountEventSourced.AccountMessage](actorSystemZ.basePath + entityId)
         .orElse(
           actorSystemZ.system
             .make(
               entityId,
               Supervisor.none,
-              GuildState.empty,
-              GuildEventSourced.handler(entityId)
+              AccountState.empty,
+              AccountEventSourced.handler(entityId)
             )
         )
     }

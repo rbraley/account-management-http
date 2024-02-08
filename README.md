@@ -36,7 +36,7 @@ $ sbt -Ddocker.username=$DOCKER_USERNAME -Ddocker.registry=$DOCKER_REGISTRY dock
 To run the example:
 - [terminal-1] ```$ cd docker; docker-compose up redis -d```
 - [terminal-2] ```$ sbt "shard-manager/runMain infra.ShardManagerApp"```
-- [terminal-3] ```$ sbt "zio/runMain example.app.GuildESApp"```
+- [terminal-3] ```$ sbt "account-management-http/runMain accountmanagement.app.AccountESApp"```
 
 ## 🤝 Contributing
 
