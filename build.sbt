@@ -2,7 +2,7 @@ import Settings._
 
 // Global Settings
 ThisBuild / scalaVersion    := "2.13.8"
-ThisBuild / organization    := "Prom3theus"
+ThisBuild / organization    := "rbraley"
 ThisBuild / versionScheme   := Some("early-semver")
 ThisBuild / dynverSeparator := "-"
 ThisBuild / conflictManager := ConflictManager.latestRevision
@@ -11,14 +11,18 @@ ThisBuild / scalacOptions ++= Seq("-Ymacro-annotations", "-target:jvm-17")
 
 lazy val root = (project in file("."))
   .settings(
-    name := "zio-actors-shardcake"
+    name         := "account-management-http",
+    publish      := {},
+    publishLocal := {}
   )
   .settings(CommandAliases.aliases)
-  .aggregate(commons, `shard-manager`, zio)
+  .aggregate(commons, `shard-manager`, `account-management-http`)
 
 lazy val commons = project
   .settings(
-    name := "commons"
+    name         := "commons",
+    publish      := {},
+    publishLocal := {}
   )
   .settings(commonSettings, scalafixSettings)
   .settings(
@@ -46,14 +50,14 @@ lazy val `shard-manager` = project
   .dependsOn(commonsDep)
   .settings(
     dockerSettings,
-    Docker / packageName        := "prom3theus/shard-manager",
+    Docker / packageName        := "shard-manager",
     Docker / dockerExposedPorts := Seq(54321, 8080)
   )
   .enablePlugins(DockerPlugin, AshScriptPlugin)
 
-lazy val zio = project
+lazy val `account-management-http` = project
   .settings(
-    name := "zio"
+    name := "account-management-http"
   )
   .settings(commonSettings, scalafixSettings)
   .settings(
@@ -65,8 +69,12 @@ lazy val zio = project
   .enablePlugins(ScalafixPlugin)
   .dependsOn(commonsDep)
   .settings(
+    Universal / mappings += {
+      val conf = (Compile / resourceDirectory).value / "application.conf"
+      conf -> "application.conf"
+    },
     dockerSettings,
-    Docker / packageName        := "prom3theus/zio-actors-shardcake",
+    Docker / packageName        := "account-management-http",
     Docker / dockerExposedPorts := Seq(54321)
   )
   .enablePlugins(DockerPlugin, AshScriptPlugin)

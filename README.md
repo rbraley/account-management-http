@@ -27,6 +27,12 @@ The app provided combines two examples given by the libraries:
 - https://zio.github.io/zio-actors/docs/overview/overview_persistence
 - https://devsisters.github.io/shardcake/docs/#an-example
 
+$ export DOCKER_USERNAME=<username>  // e.g: johndoe
+$ export DOCKER_REGISTRY=<registry>  // e.g: docker.io
+$ sbt -Ddocker.username=$DOCKER_USERNAME -Ddocker.registry=$DOCKER_REGISTRY docker:publish
+
+[//]: # (sbt "docker:publishLocal")
+
 To run the example:
 - [terminal-1] ```$ cd docker; docker-compose up redis -d```
 - [terminal-2] ```$ sbt "shard-manager/runMain infra.ShardManagerApp"```

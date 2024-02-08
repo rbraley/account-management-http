@@ -1,8 +1,9 @@
+import com.typesafe.sbt.SbtNativePackager.Universal
 import sbt.Keys._
 import sbt._
-
 import scalafix.sbt.ScalafixPlugin.autoImport._
 import com.typesafe.sbt.SbtNativePackager.autoImport._
+import com.typesafe.sbt.packager.MappingsHelper.directory
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport._
 import com.typesafe.sbt.packager.docker._
 
@@ -27,7 +28,7 @@ object Settings extends CommonScalac {
     dockerUsername        := sys.props.get("docker.username"),
     dockerRepository      := sys.props.get("docker.registry"),
     Docker / version      := "latest",
-    Docker / organization := "prom3theus",
+    Docker / organization := "rbraley",
     dockerBaseImage       := "azul/zulu-openjdk:17"
   )
 }

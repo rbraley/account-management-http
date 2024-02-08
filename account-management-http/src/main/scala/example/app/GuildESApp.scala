@@ -7,6 +7,7 @@ import example.behavior.GuildESBehavior.GuildESMessage.Join
 import example.behavior.GuildESBehavior.{ GuildES, behavior }
 import infra.Layers
 import infra.Layers.ActorSystemZ
+import sttp.client3.UriContext
 import zio.actors.ActorSystem
 import zio.{ Random, Scope, System, Task, ZIO, ZIOAppDefault, ZLayer }
 
@@ -15,7 +16,16 @@ object GuildESApp extends ZIOAppDefault {
     ZLayer(
       System
         .env("port")
-        .map(_.flatMap(_.toIntOption).fold(Config.default)(port => Config.default.copy(shardingPort = port)))
+        .map(
+          _.flatMap(_.toIntOption).fold(
+            Config.default.copy(shardManagerUri = uri"http://shard-manager:8080/api/graphql")
+          )(port =>
+            Config.default.copy(
+              shardingPort = port,
+              shardManagerUri = uri"http://shard-manager:8080/api/graphql"
+            )
+          )
+        )
     )
 
   val program: ZIO[

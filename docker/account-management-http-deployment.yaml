@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-management-http
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: account-management-http
+  template:
+    metadata:
+      labels:
+        app: account-management-http
+    spec:
+      containers:
+        - name: account-management-http
+          image: rbraley/account-management-http
+          ports:
+            - name: graphql-port
+              containerPort: 8080
+            - name: http
+              containerPort: 80
+            - name: sharding-port
+              containerPort: 54321
+      restartPolicy: Always

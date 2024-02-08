@@ -13,6 +13,8 @@ import zio.{ Task, ZEnvironment, ZIO, ZLayer }
 import java.io.File
 import zio.actors.ActorSystemUtils
 
+import scala.util.Try
+
 object Layers {
   val redis: ZLayer[Any, Throwable, Redis] =
     ZLayer.scopedEnvironment {
@@ -24,7 +26,7 @@ object Layers {
       }
 
       (for {
-        client   <- RedisClient[Task].from("redis://localhost")
+        client   <- RedisClient[Task].from("redis://redis")
         commands <- Redis[Task].fromClient(client, RedisCodec.Utf8)
         pubSub   <- PubSub.mkPubSubConnection[Task, String, String](client, RedisCodec.Utf8)
       } yield ZEnvironment(commands, pubSub)).toScopedZIO
@@ -37,9 +39,15 @@ object Layers {
     val basePath = s"zio://$name@0.0.0.0:0000/"
   }
 
+  def applicationConf: Option[File] = {
+    Try(new File(getClass.getResource("application.conf").getFile))
+      .recover(_ => new File("/opt/docker/application.conf"))
+      .toOption
+  }
+
   def actorSystem(name: String): ZLayer[Any, Throwable, ActorSystemZ] =
     ZLayer {
-      ActorSystem(name, Some(new File("./src/main/resources/application.conf")))
+      ActorSystem(name, applicationConf)
         .map { system => ActorSystemZ(name, system) }
     }
 }

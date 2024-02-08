@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shard-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shard-manager
+  template:
+    metadata:
+      labels:
+        app: shard-manager
+    spec:
+      containers:
+        - name: shard-manager
+          image: rbraley/shard-manager
+          ports:
+            - name: graphql-port
+              containerPort: 8080
+            - name: sharding-port
+              containerPort: 54321
+          env:
+            - name: SELF_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: port
+              value: "54321"
+      restartPolicy: Always

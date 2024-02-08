@@ -8,8 +8,8 @@ services:
   
   shard-manager:
     container_name: shard-manager
-    image: prom3theus/shard-manager
+    image: rbraley/shard-manager
 
-  zio-actors-shardcake:
-    container_name: zio-actors-shardcake
-    image: prom3theus/zio-actors-shardcake
+  account-management-http:
+    container_name: account-management-http
+    image: rbraley/account-management-http
