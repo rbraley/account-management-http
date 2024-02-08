@@ -1,10 +1,10 @@
-# ZIO Actors + Shardcake
-|Technology   | Version
-|-------------|---------- |
-|Scala        | 2.13 |
-|SBT          | 1.7.1 |
-|JAVA         | 17 |
-|ZIO          | 2.0.2 |
+# ZIO Actors + Shardcake + ZIO HTTP
+| Technology | Version |
+|------------|---------|
+| Scala      | 2.13    |
+| SBT        | 1.7.1   |
+| JAVA       | 17      |
+| ZIO        | 2.0.2   |
 
 This is an effort on trying to combine the usage of these two libraries:
 - [zio-actors](https://zio.github.io/zio-actors/)

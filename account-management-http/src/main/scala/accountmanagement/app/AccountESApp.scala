@@ -1,9 +1,10 @@
 package accountmanagement.app
 
+import accountmanagement.actor.AccountEventSourced.Transaction
 import com.devsisters.shardcake._
 import com.devsisters.shardcake.interfaces.Serialization
 import dev.profunktor.redis4cats.RedisCommands
-import accountmanagement.behavior.AccountESBehavior.AccountESMessage.Join
+import accountmanagement.behavior.AccountESBehavior.AccountESMessage.ApplyTransaction
 import accountmanagement.behavior.AccountESBehavior.{ AccountES, behavior }
 import infra.Layers
 import infra.Layers.ActorSystemZ
@@ -33,13 +34,17 @@ object AccountESApp extends ZIOAppDefault {
       _              <- Sharding.registerEntity(AccountES, behavior)
       _              <- Sharding.registerScoped
       accountManager <- Sharding.messenger(AccountES)
-      user1          <- Random.nextUUID.map(_.toString)
-      user2          <- Random.nextUUID.map(_.toString)
-      user3          <- Random.nextUUID.map(_.toString)
-      _              <- accountManager.send("account1")(Join(user1, _)).debug
-      _              <- accountManager.send("account1")(Join(user2, _)).debug
-      _              <- accountManager.send("account1")(Join(user3, _)).debug
-      _              <- ZIO.never
+      tx1     = Transaction(10, "groceries")
+      invalid = Transaction(-20, "cash withdrawal")
+      _ <- accountManager
+        .send("account1")(ApplyTransaction(tx1, _))
+        .map(balance => s"account1 $balance")
+        .debug
+      _ <- accountManager
+        .send("account1")(ApplyTransaction(invalid, _))
+        .map(balance => s"account1 $balance")
+        .debug
+      _ <- ZIO.never
     } yield ()
 
   def run: Task[Unit] =

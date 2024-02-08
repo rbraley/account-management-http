@@ -10,18 +10,18 @@ import zio.actors.ActorRef
 import infra.Layers.ActorSystemZ
 
 object AccountEventSourced {
+  case class Transaction(amount: BigDecimal, description: String)
   sealed trait AccountMessage[+_]
-  case class Join(userId: String)  extends AccountMessage[Try[Set[String]]]
-  case class Leave(userId: String) extends AccountMessage[Unit]
-  case object Get                  extends AccountMessage[AccountState]
+  case class ApplyTransaction(tx: Transaction) extends AccountMessage[Try[BigDecimal]]
+  case object Get                              extends AccountMessage[AccountState]
 
   sealed trait AccountEvent
-  case class JoinedEvent(userId: String) extends AccountEvent
-  case class LeftEvent(userId: String)   extends AccountEvent
-
-  case class AccountState(members: Set[String])
+  case class TransactionApplied(tx: Transaction) extends AccountEvent
+  case class AccountState(txs: List[Transaction], balance: BigDecimal, userDetails: String = "") {
+    def isValid(tx: Transaction): Boolean = balance + tx.amount > 0.0
+  }
   object AccountState {
-    def empty: AccountState = AccountState(members = Set.empty)
+    def empty: AccountState = AccountState(List.empty[Transaction], BigDecimal(0.0))
   }
 
   def handler(persistenceId: String): EventSourcedStateful[Any, AccountState, AccountMessage, AccountEvent] =
@@ -34,25 +34,21 @@ object AccountEventSourced {
           context: Context
       ): UIO[(Command[AccountEvent], AccountState => A)] =
         msg match {
-          case Join(userId) =>
-            if (state.members.size >= 5) {
-              ZIO.succeed((Command.ignore, _ => Failure(new Exception("Account is already full!")).asInstanceOf[A]))
+          case ApplyTransaction(tx) =>
+            if (state.isValid(tx)) {
+              ZIO.succeed((Command.persist(TransactionApplied(tx)), st => Success(st.balance).asInstanceOf[A]))
             } else {
-              ZIO.succeed((Command.persist(JoinedEvent(userId)), st => Success(st.members).asInstanceOf[A]))
+              ZIO.succeed((Command.ignore, _ => Failure(new Exception("Insufficient Funds!")).asInstanceOf[A]))
             }
-          case Leave(userId) => ZIO.succeed((Command.persist(LeftEvent(userId)), _ => ().asInstanceOf[A]))
-          case Get           => ZIO.succeed((Command.ignore, _ => state.asInstanceOf[A]))
+          case Get => ZIO.succeed((Command.ignore, _ => state.asInstanceOf[A]))
         }
 
       override def sourceEvent(state: AccountState, event: AccountEvent): AccountState =
         event match {
-          case JoinedEvent(userId) =>
+          case TransactionApplied(tx) =>
             state.copy(
-              members = state.members + userId
-            )
-          case LeftEvent(userId) =>
-            state.copy(
-              members = state.members - userId
+              txs = tx :: state.txs,
+              balance = state.balance + tx.amount
             )
         }
     }

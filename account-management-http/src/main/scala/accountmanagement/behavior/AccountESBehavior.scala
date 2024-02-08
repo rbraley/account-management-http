@@ -3,6 +3,7 @@ package accountmanagement.behavior
 import com.devsisters.shardcake.Messenger.Replier
 import com.devsisters.shardcake.{ EntityType, Sharding }
 import accountmanagement.actor.AccountEventSourced
+import accountmanagement.actor.AccountEventSourced.Transaction
 import zio.{ Dequeue, RIO, ZIO }
 
 import scala.util.Try
@@ -12,8 +13,9 @@ object AccountESBehavior {
   sealed trait AccountESMessage
 
   object AccountESMessage {
-    case class Join(userId: String, replier: Replier[Try[Set[String]]]) extends AccountESMessage
-    case class Leave(userId: String)                                    extends AccountESMessage
+    case class ApplyTransaction(tx: Transaction, replier: Replier[Try[BigDecimal]]) extends AccountESMessage
+//    case class Join(userId: String, replier: Replier[Try[Set[String]]])             extends AccountESMessage
+//    case class Leave(userId: String)                                                extends AccountESMessage
   }
 
   object AccountES extends EntityType[AccountESMessage]("accountES")
@@ -33,16 +35,16 @@ object AccountESBehavior {
       .actorRef(entityId)
       .flatMap { actor =>
         message match {
-          case AccountESMessage.Join(userId, replier) =>
+          case AccountESMessage.ApplyTransaction(userId, replier) =>
             actor
-              .?(AccountEventSourced.Join(userId))
-              .flatMap { tryMembers =>
-                replier.reply(tryMembers)
+              .?(AccountEventSourced.ApplyTransaction(userId))
+              .flatMap { balance =>
+                replier.reply(balance)
               }
-          case AccountESMessage.Leave(userId) =>
-            actor
-              .?(AccountEventSourced.Leave(userId))
-              .unit
+//          case AccountESMessage.Leave(userId) =>
+//            actor
+//              .?(AccountEventSourced.Leave(userId))
+//              .unit
         }
       }
 }
