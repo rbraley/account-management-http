@@ -30,17 +30,4 @@ The app provided combines two examples given by the libraries:
 $ export DOCKER_USERNAME=<username>  // e.g: johndoe
 $ export DOCKER_REGISTRY=<registry>  // e.g: docker.io
 $ sbt -Ddocker.username=$DOCKER_USERNAME -Ddocker.registry=$DOCKER_REGISTRY docker:publish
-
-[//]: # (sbt "docker:publishLocal")
-
-To run the example:
-- [terminal-1] ```$ cd docker; docker-compose up redis -d```
-- [terminal-2] ```$ sbt "shard-manager/runMain infra.ShardManagerApp"```
-- [terminal-3] ```$ sbt "account-management-http/runMain accountmanagement.app.AccountESApp"```
-
-## 🤝 Contributing
-
-The best way to contribute right now is to provide feedback.
-Give the demo a test drive.
-
-When contributing to this project and interacting with others, please follow our [Contributing Guidelines](./CONTRIBUTING.md).
+$ kubectl apply -f infra/

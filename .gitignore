@@ -18,7 +18,7 @@ metals.sbt
 project/metals.sbt
 
 # Docker
-docker/data/
+infra/data/
 
 # Simple Build Tool
 dist/*
