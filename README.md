@@ -28,11 +28,11 @@ The app provided combines two examples given by the libraries:
 - https://devsisters.github.io/shardcake/docs/#an-example
 
 
-    $ export DOCKER_USERNAME=<username>  // e.g: johndoe
-    $ export DOCKER_REGISTRY=<registry>  // e.g: docker.io
-    $ sbt -Ddocker.username=$DOCKER_USERNAME -Ddocker.registry=$DOCKER_REGISTRY docker:publish
-    $ kubectl apply -f infra/
-    $ kubectl port-forward deployment/account-management-http 8081
+        $ export DOCKER_USERNAME=<username>  // e.g: johndoe
+        $ export DOCKER_REGISTRY=<registry>  // e.g: docker.io
+        $ sbt -Ddocker.username=$DOCKER_USERNAME -Ddocker.registry=$DOCKER_REGISTRY docker:publish
+        $ kubectl apply -f infra/
+        $ kubectl port-forward deployment/account-management-http 8081
 
 
 
