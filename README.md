@@ -31,3 +31,11 @@ $ export DOCKER_USERNAME=<username>  // e.g: johndoe
 $ export DOCKER_REGISTRY=<registry>  // e.g: docker.io
 $ sbt -Ddocker.username=$DOCKER_USERNAME -Ddocker.registry=$DOCKER_REGISTRY docker:publish
 $ kubectl apply -f infra/
+$ kubectl port-forward deployment/account-management-http 8081
+
+
+
+### Future Work
+
+- Add HA to the redis deployment using redis-cluster.
+- Add access permissions and user management to prevent looking up accounts the user doesn't own.

@@ -7,9 +7,10 @@ object Dependencies {
     val logback            = "1.2.11"
     val logbackEncoder     = "7.2"
     val jacksonScalaModule = "2.13.3"
-    val zio                = "2.0.2"
+    val zio                = "2.0.13"
     val zioActors          = "0.1.0"
-    val zioTest            = "2.0.0"
+    val zioTest            = "2.0.13"
+    val zioHttp            = "3.0.0-RC4"
     val zioGrpc            = "0.6.0-test4"
     val shardcake          = "2.0.0"
   }
@@ -47,6 +48,8 @@ object Dependencies {
 
   object Zio {
     val zio                  = "dev.zio"                       %% "zio"                    % Versions.zio
+    val zioHttp              = "dev.zio"                       %% "zio-http"               % Versions.zioHttp
+    val zioHttpCli           = "dev.zio"                       %% "zio-http-cli"           % Versions.zioHttp
     val zioActors            = "dev.zio"                       %% "zio-actors"             % Versions.zioActors
     val zioActorsPersistence = "dev.zio"                       %% "zio-actors-persistence" % Versions.zioActors
     val zioTest              = "dev.zio"                       %% "zio-test"               % Versions.zioTest % Test
@@ -54,6 +57,8 @@ object Dependencies {
 
     val all = Seq(
       zio,
+      zioHttp,
+      zioHttpCli,
       zioActors,
       zioActorsPersistence,
       zioTest,

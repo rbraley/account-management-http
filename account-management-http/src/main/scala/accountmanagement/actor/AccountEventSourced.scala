@@ -1,5 +1,6 @@
 package accountmanagement.actor
 
+import accountmanagement.models.AccountManagementProtocol.AccountInfo
 import zio.actors.Context
 import zio.actors.persistence.{ Command, EventSourcedStateful, PersistenceId }
 import zio.{ UIO, ZIO }
@@ -12,7 +13,7 @@ import infra.Layers.ActorSystemZ
 object AccountEventSourced {
   case class Transaction(amount: BigDecimal, description: String)
   sealed trait AccountMessage[+_]
-  case class ApplyTransaction(tx: Transaction) extends AccountMessage[Try[BigDecimal]]
+  case class ApplyTransaction(tx: Transaction) extends AccountMessage[Try[AccountInfo]]
   case object Get                              extends AccountMessage[AccountState]
 
   sealed trait AccountEvent
@@ -36,7 +37,12 @@ object AccountEventSourced {
         msg match {
           case ApplyTransaction(tx) =>
             if (state.isValid(tx)) {
-              ZIO.succeed((Command.persist(TransactionApplied(tx)), st => Success(st.balance).asInstanceOf[A]))
+              ZIO.succeed(
+                (
+                  Command.persist(TransactionApplied(tx)),
+                  st => Success(AccountInfo(persistenceId, st.balance, st.userDetails)).asInstanceOf[A]
+                )
+              )
             } else {
               ZIO.succeed((Command.ignore, _ => Failure(new Exception("Insufficient Funds!")).asInstanceOf[A]))
             }

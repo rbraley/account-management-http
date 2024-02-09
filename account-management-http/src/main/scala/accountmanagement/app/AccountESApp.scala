@@ -10,7 +10,7 @@ import infra.Layers
 import infra.Layers.ActorSystemZ
 import sttp.client3.UriContext
 import zio.{ Scope, System, Task, ZIO, ZIOAppDefault, ZLayer }
-
+/*
 object AccountESApp extends ZIOAppDefault {
   private val defaultConfig = Config.default.copy(
     shardManagerUri = uri"http://shard-manager:8080/api/graphql",
@@ -64,3 +64,4 @@ object AccountESApp extends ZIOAppDefault {
         GrpcShardingService.live
       )
 }
+ */

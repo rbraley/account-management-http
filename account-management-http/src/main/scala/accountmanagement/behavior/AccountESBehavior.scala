@@ -1,19 +1,21 @@
 package accountmanagement.behavior
 
-import com.devsisters.shardcake.Messenger.Replier
-import com.devsisters.shardcake.{ EntityType, Sharding }
 import accountmanagement.actor.AccountEventSourced
 import accountmanagement.actor.AccountEventSourced.Transaction
+import accountmanagement.models.AccountManagementProtocol.AccountInfo
+import com.devsisters.shardcake.Messenger.Replier
+import com.devsisters.shardcake.{ EntityType, Sharding }
+import infra.Layers.ActorSystemZ
 import zio.{ Dequeue, RIO, ZIO }
 
 import scala.util.Try
-import infra.Layers.ActorSystemZ
 
 object AccountESBehavior {
   sealed trait AccountESMessage
 
   object AccountESMessage {
-    case class ApplyTransaction(tx: Transaction, replier: Replier[Try[BigDecimal]]) extends AccountESMessage
+    case class ApplyTransaction(tx: Transaction, replier: Replier[Try[AccountInfo]]) extends AccountESMessage
+    case class Get(replier: Replier[Option[AccountInfo]])                            extends AccountESMessage
   }
 
   object AccountES extends EntityType[AccountESMessage]("accountES")
@@ -36,9 +38,18 @@ object AccountESBehavior {
           case AccountESMessage.ApplyTransaction(userId, replier) =>
             actor
               .?(AccountEventSourced.ApplyTransaction(userId))
-              .flatMap { balance =>
-                replier.reply(balance)
+              .flatMap { accountInfo =>
+                replier.reply(accountInfo)
               }
+          case AccountESMessage.Get(replier) =>
+            actor
+              .?(AccountEventSourced.Get)
+              .flatMap(accountState =>
+                if (accountState.txs.isEmpty)
+                  replier.reply(None)
+                else
+                  replier.reply(Some(AccountInfo(entityId, accountState.balance, accountState.userDetails)))
+              )
         }
       }
 }
