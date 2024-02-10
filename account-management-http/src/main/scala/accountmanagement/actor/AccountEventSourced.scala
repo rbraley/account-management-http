@@ -59,6 +59,9 @@ object AccountEventSourced {
         }
     }
 
+  // This actorRef function will either hold a reference to our actor for a given accountId or create one
+  // This means that each account will only have a single threaded handling of its own state, but we can have as many
+  // accounts running in parallel as we want
   def actorRef(
       entityId: String
   ): ZIO[ActorSystemZ, Throwable, ActorRef[AccountEventSourced.AccountMessage]] =

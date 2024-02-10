@@ -5,6 +5,11 @@ import zio.http.Method._
 import zio.http.codec._
 import zio.http.endpoint.Endpoint
 
+/*
+ * Endpoints contains pure descriptions of the HTTP APIs we will expose as data structures
+ * Note that these are mere descriptions and it does not implement them.
+ * The implmentations are done in Handlers.scala
+ */
 trait Endpoints {
   import zio.http.codec.PathCodec._
 

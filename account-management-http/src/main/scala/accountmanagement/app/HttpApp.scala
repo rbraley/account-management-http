@@ -1,20 +1,12 @@
 package accountmanagement.app
 
-import com.devsisters.shardcake.{
-  Config,
-  GrpcConfig,
-  GrpcPods,
-  GrpcShardingService,
-  KryoSerialization,
-  RedisConfig,
-  ShardManagerClient,
-  Sharding,
-  StorageRedis
-}
+import accountmanagement.actor.AccountManager
+import accountmanagement.app.Routes.{ createTransactionRoute, getAccountRoute, getTransactionHistoryRoute }
+import com.devsisters.shardcake._
 import infra.Layers
 import sttp.client3.UriContext
+import zio.http.{ Routes, Server }
 import zio.{ Scope, System, ZLayer }
-import zio.http.{ Handler, Routes, Server }
 
 object HttpApp extends zio.ZIOAppDefault with Endpoints with Handlers {
   private val defaultConfig = Config.default.copy(
@@ -30,24 +22,6 @@ object HttpApp extends zio.ZIOAppDefault with Endpoints with Handlers {
         )
     )
 
-  val getAccountRoute =
-    getAccount.implement {
-      Handler.fromFunctionZIO(getAccountHandler)
-    }
-
-  val createTransactionRoute =
-    createTransaction.implement {
-      Handler.fromFunctionZIO { tx =>
-        createTransactionHandler(tx)
-          .debug("createTransaction")
-      }
-    }
-
-  val getTransactionHistoryRoute =
-    getTransactionHistory.implement {
-      Handler.fromFunctionZIO(getTransactionHistoryHandler)
-    }
-
   val routes = Routes(getAccountRoute, createTransactionRoute, getTransactionHistoryRoute)
 
   val run = Server
@@ -56,7 +30,7 @@ object HttpApp extends zio.ZIOAppDefault with Endpoints with Handlers {
       config,
       Scope.default,
       Server.defaultWithPort(8081),
-      AccountManager.live,
+      AccountManager.layer,
       ZLayer.succeed(GrpcConfig.default),
       ZLayer.succeed(RedisConfig.default),
       Layers.redis,

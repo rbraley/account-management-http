@@ -25,10 +25,10 @@ object Settings extends CommonScalac {
   )
 
   lazy val dockerSettings = Seq(
-    dockerUsername        := sys.props.get("docker.username"),
-    dockerRepository      := sys.props.get("docker.registry"),
-    Docker / version      := "latest",
-    Docker / organization := "rbraley",
-    dockerBaseImage       := "azul/zulu-openjdk:17"
+    dockerUsername                                     := sys.props.get("docker.username"),
+    dockerRepository                                   := sys.props.get("docker.registry"),
+    Docker / version                                   := "latest",
+    Docker / organization.withRank(KeyRanks.Invisible) := "rbraley",
+    dockerBaseImage                                    := "azul/zulu-openjdk:17"
   )
 }

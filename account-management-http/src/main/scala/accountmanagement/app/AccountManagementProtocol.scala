@@ -1,8 +1,11 @@
 package accountmanagement.app
 
 import zio.schema.annotation.description
-import zio.schema.{DeriveSchema, Schema}
+import zio.schema.{ DeriveSchema, Schema }
 
+/*
+ * AccountManagementProtocol contains types which are used in the externally facing HTTP interface.
+ */
 object AccountManagementProtocol {
   case class InsufficientFundsError() extends Throwable
   object InsufficientFundsError {
