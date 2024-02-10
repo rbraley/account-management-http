@@ -18,8 +18,6 @@ class AccountEventSourcedSpec extends AsyncWordSpec with Matchers with BeforeAnd
         Some(new File("account-management-http/src/main/resources/application.conf"))
       )
       // Scenario 1
-      user1 <- Random.nextUUID.map(_.toString)
-      user2 <- Random.nextUUID.map(_.toString)
       persistenceId1 = "account1"
       tx1            = Transaction(10, "groceries")
       account1 <- actorSystem.make(persistenceId1, Supervisor.none, AccountState.empty, handler(persistenceId1))
@@ -39,8 +37,6 @@ class AccountEventSourcedSpec extends AsyncWordSpec with Matchers with BeforeAnd
       // Scenario 3
       persistenceId1 = "account1"
       account1B <- actorSystem.make(persistenceId1, Supervisor.none, AccountState.empty, handler(persistenceId1))
-      user3     <- Random.nextUUID.map(_.toString)
-      user4     <- Random.nextUUID.map(_.toString)
       _         <- account1B ? ApplyTransaction(tx1)
       _         <- account1B ? ApplyTransaction(tx1)
       state1B   <- account1B ? Get

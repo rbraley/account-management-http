@@ -2,7 +2,8 @@ package accountmanagement.behavior
 
 import accountmanagement.actor.AccountEventSourced
 import accountmanagement.actor.AccountEventSourced.Transaction
-import accountmanagement.models.AccountManagementProtocol.AccountInfo
+import accountmanagement.app.AccountManagementProtocol
+import AccountManagementProtocol.{ AccountInfo, TransactionHistory }
 import com.devsisters.shardcake.Messenger.Replier
 import com.devsisters.shardcake.{ EntityType, Sharding }
 import infra.Layers.ActorSystemZ
@@ -16,6 +17,7 @@ object AccountESBehavior {
   object AccountESMessage {
     case class ApplyTransaction(tx: Transaction, replier: Replier[Try[AccountInfo]]) extends AccountESMessage
     case class Get(replier: Replier[Option[AccountInfo]])                            extends AccountESMessage
+    case class GetTransactionHistory(replier: Replier[TransactionHistory])           extends AccountESMessage
   }
 
   object AccountES extends EntityType[AccountESMessage]("accountES")
@@ -49,6 +51,18 @@ object AccountESBehavior {
                   replier.reply(None)
                 else
                   replier.reply(Some(AccountInfo(entityId, accountState.balance, accountState.userDetails)))
+              )
+          case AccountESMessage.GetTransactionHistory(replier) =>
+            actor
+              .?(AccountEventSourced.Get)
+              .flatMap(accountState =>
+                replier.reply(
+                  TransactionHistory(
+                    entityId,
+                    accountState.txs
+                      .map(tx => AccountManagementProtocol.Transaction(entityId, tx.amount, tx.description))
+                  )
+                )
               )
         }
       }

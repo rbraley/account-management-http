@@ -1,20 +1,16 @@
 package infra
 
-import com.devsisters.shardcake.{Messenger, Sharding}
 import com.devsisters.shardcake.StorageRedis.Redis
-import com.devsisters.shardcake.interfaces.Serialization
-import dev.profunktor.redis4cats.{Redis, RedisCommands}
+import dev.profunktor.redis4cats.Redis
 import dev.profunktor.redis4cats.connection.RedisClient
 import dev.profunktor.redis4cats.data.RedisCodec
 import dev.profunktor.redis4cats.effect.Log
 import dev.profunktor.redis4cats.pubsub.PubSub
 import zio.actors.ActorSystem
 import zio.interop.catz._
-import zio.{Scope, Task, ZEnvironment, ZIO, ZLayer}
+import zio.{ Task, ZEnvironment, ZIO, ZLayer }
 
 import java.io.File
-import zio.actors.ActorSystemUtils
-
 import scala.util.Try
 
 object Layers {
@@ -46,8 +42,6 @@ object Layers {
       .recover(_ => new File("/opt/docker/application.conf"))
       .toOption
   }
-
-
 
   def actorSystem(name: String): ZLayer[Any, Throwable, ActorSystemZ] =
     ZLayer {

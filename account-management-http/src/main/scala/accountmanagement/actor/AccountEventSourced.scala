@@ -1,6 +1,6 @@
 package accountmanagement.actor
 
-import accountmanagement.models.AccountManagementProtocol.AccountInfo
+import accountmanagement.app.AccountManagementProtocol.AccountInfo
 import zio.actors.Context
 import zio.actors.persistence.{ Command, EventSourcedStateful, PersistenceId }
 import zio.{ UIO, ZIO }

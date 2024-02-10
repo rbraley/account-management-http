@@ -38,25 +38,17 @@ object HttpApp extends zio.ZIOAppDefault with Endpoints with Handlers {
   val createTransactionRoute =
     createTransaction.implement {
       Handler.fromFunctionZIO { tx =>
-        createTransactionHandler(tx).debug("createTransaction: ").orDie
+        createTransactionHandler(tx)
+          .debug("createTransaction")
       }
     }
 
-  //  val getUserPostsRoute =
-  //    getUserPosts.implement {
-  //      Handler.fromFunction { case (userId, postId, name) =>
-  //        List(Post(userId, postId, name))
-  //      }
-  //    }
-  //
-  //  val createUserRoute =
-  //    createUser.implement {
-  //      Handler.fromFunction { user =>
-  //        user.name
-  //      }
-  //    }
+  val getTransactionHistoryRoute =
+    getTransactionHistory.implement {
+      Handler.fromFunctionZIO(getTransactionHistoryHandler)
+    }
 
-  val routes = Routes(getAccountRoute, createTransactionRoute) // , getUserPostsRoute, createUserRoute)
+  val routes = Routes(getAccountRoute, createTransactionRoute, getTransactionHistoryRoute)
 
   val run = Server
     .serve(routes.toHttpApp)
