@@ -8,6 +8,13 @@ import sttp.client3.UriContext
 import zio.http.{ Routes, Server }
 import zio.{ Scope, System, ZLayer }
 
+/*
+ * This is the main entrypoint into the application. It serves an Http Server with 3 routes
+ *
+ * GET /account/{account_id}
+ * POST /transaction
+ * GET /transaction/history/{account_id}
+ */
 object HttpApp extends zio.ZIOAppDefault with Endpoints with Handlers {
   private val defaultConfig = Config.default.copy(
     shardManagerUri = uri"http://shard-manager:8080/api/graphql",

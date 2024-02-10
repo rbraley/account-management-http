@@ -50,6 +50,7 @@ object Dependencies {
     val zio                  = "dev.zio"                       %% "zio"                    % Versions.zio
     val zioHttp              = "dev.zio"                       %% "zio-http"               % Versions.zioHttp
     val zioHttpCli           = "dev.zio"                       %% "zio-http-cli"           % Versions.zioHttp
+    val zioHttpDocs          = "dev.zio"                       %% "zio-http-docs"          % Versions.zioHttp
     val zioActors            = "dev.zio"                       %% "zio-actors"             % Versions.zioActors
     val zioActorsPersistence = "dev.zio"                       %% "zio-actors-persistence" % Versions.zioActors
     val zioTest              = "dev.zio"                       %% "zio-test"               % Versions.zioTest % Test
@@ -59,6 +60,7 @@ object Dependencies {
       zio,
       zioHttp,
       zioHttpCli,
+      zioHttpDocs,
       zioActors,
       zioActorsPersistence,
       zioTest,

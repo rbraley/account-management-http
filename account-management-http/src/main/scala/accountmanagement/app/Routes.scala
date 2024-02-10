@@ -18,10 +18,7 @@ object Routes {
 
   val createTransactionRoute =
     createTransaction.implement {
-      Handler.fromFunctionZIO { tx =>
-        createTransactionHandler(tx)
-          .debug("createTransaction")
-      }
+      Handler.fromFunctionZIO(createTransactionHandler)
     }
 
   val getTransactionHistoryRoute =

@@ -10,13 +10,6 @@ This is an effort on trying to combine the usage of these two libraries:
 - [zio-actors](https://zio.github.io/zio-actors/)
 - [shardcake](https://devsisters.github.io/shardcake/)
 
-The goal of this project is to serve as a toy example for:
-- filing issues to the libraries
-- to inspire others to try out this new stack.
-- opening discussions on the discord 👾 channels:
-    + [zio-actors](https://discord.gg/fQdPv8JX)
-    + [shardcake](https://discord.gg/4MuKJryZ)
-
 The legend says:
 > the power from fusing (👉👈) these two libraries will be a killer for akka persistance + sharding.
 

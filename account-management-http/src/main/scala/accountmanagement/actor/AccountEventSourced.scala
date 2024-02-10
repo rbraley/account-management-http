@@ -12,6 +12,7 @@ import infra.Layers.ActorSystemZ
 
 object AccountEventSourced {
   case class Transaction(amount: BigDecimal, description: String)
+
   sealed trait AccountMessage[+_]
   case class ApplyTransaction(tx: Transaction) extends AccountMessage[Try[AccountInfo]]
   case object Get                              extends AccountMessage[AccountState]

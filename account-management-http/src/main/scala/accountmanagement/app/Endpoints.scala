@@ -1,6 +1,6 @@
 package accountmanagement.app
-import AccountManagementProtocol.InsufficientFundsError
 import AccountManagementProtocol.{ AccountInfo, Transaction, TransactionHistory }
+import accountmanagement.app.DomainErrors.{ InsufficientFundsError, AccountNotFound }
 import zio.http.Method._
 import zio.http.codec._
 import zio.http.endpoint.Endpoint
@@ -15,10 +15,12 @@ trait Endpoints {
 
   val getAccount =
     Endpoint(GET / "account" / string("accountId") ?? Doc.p("The unique identifier of the Account"))
-      .out[Option[AccountInfo]] ?? Doc.p("Get an account by ID")
+      .outError[AccountNotFound](zio.http.Status.NotFound, Doc.p("No deposits have been made to this account"))
+      .out[AccountInfo] ?? Doc.p("Get an account by ID")
 
   val getTransactionHistory =
     Endpoint(GET / "transaction" / "history" / string("accountId") ?? Doc.p("The unique identifier of the Account"))
+      .outError[AccountNotFound](zio.http.Status.NotFound, Doc.p("No deposits have been made to this account"))
       .out[TransactionHistory] ?? Doc.p("Get the transaction history by accountId")
 
   val createTransaction =

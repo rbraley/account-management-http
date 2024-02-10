@@ -7,10 +7,7 @@ import zio.schema.{ DeriveSchema, Schema }
  * AccountManagementProtocol contains types which are used in the externally facing HTTP interface.
  */
 object AccountManagementProtocol {
-  case class InsufficientFundsError() extends Throwable
-  object InsufficientFundsError {
-    implicit val schema: Schema[InsufficientFundsError] = DeriveSchema.gen[InsufficientFundsError]
-  }
+
   sealed trait AccountHttpMessage
   final case class Transaction(
       @description("The account identifier for the transaction")
